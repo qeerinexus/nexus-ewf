@@ -511,6 +511,1673 @@ details.expl[open] summary{ margin-bottom:8px; }
 .display-qr-copy{ min-width:0; flex:1 1 auto; }
 .display-qr strong{ display:block; font-family:'Fraunces',serif; font-size:15px; color:#FBF2E6; line-height:1.2; }
 .display-qr span{ display:block; font-size:11.5px; color:#D9B79A; line-height:1.4; margin-top:5px; }
+/* the deployment URL is long — wrap it rather than ellipsing it away */
+.display-qr-url{ display:block; max-width:100%; font-family:'IBM Plex Mono',monospace; font-size:9.5px; line-height:1.35; color:#E8B98A; margin-top:6px; overflow-wrap:anywhere; }
+
+/* ---------- live score rail (fixed right) ---------- */
+.display-mode .display-rail{
+  display:flex; flex-direction:column;
+  position:fixed; z-index:40; right:26px;
+  top:calc(var(--dispTop,66px) + 22px); bottom:calc(var(--dispBottom,46px) + 18px);
+  width:clamp(232px,18vw,286px); overflow:auto;
+  padding:15px 15px 16px;
+  background:rgba(22,8,16,.88);
+  border:1px solid rgba(232,185,138,.28);
+  border-radius:4px;
+  box-shadow:0 18px 48px rgba(0,0,0,.42);
+  backdrop-filter:blur(12px);
+}
+.display-rail .railhead{
+  font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:.14em;
+  text-transform:uppercase; color:#D9B79A; margin-bottom:11px;
+}
+.display-rail .rail-portfolio{
+  font-family:'Fraunces',serif; font-size:16px; color:#FBF2E6; line-height:1.2;
+  padding-bottom:12px; margin-bottom:13px; border-bottom:1px solid rgba(232,185,138,.24);
+}
+.rail-scores{ display:grid; gap:9px; margin-bottom:14px; }
+.rail-score{ padding:10px 12px; background:rgba(255,255,255,.055); border:1px solid rgba(232,185,138,.2); border-radius:3px; }
+.rail-score .rs-lbl{ font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:#D9B79A; }
+.rail-score .rs-val{ font-family:'Fraunces',serif; font-size:29px; line-height:1; margin:5px 0 7px; }
+.rail-score .rs-bar{ height:4px; background:rgba(0,0,0,.4); border-radius:2px; overflow:hidden; }
+.rail-score .rs-bar i{ display:block; height:100%; border-radius:2px; transition:width .5s ease; }
+.rail-score.econ .rs-val{ color:#E8A548; } .rail-score.econ .rs-bar i{ background:#E8A548; }
+.rail-score.tech .rs-val{ color:#6FC2CE; } .rail-score.tech .rs-bar i{ background:#6FC2CE; }
+.rail-score.env  .rs-val{ color:#A8C06E; } .rail-score.env  .rs-bar i{ background:#A8C06E; }
+.rail-kpis{ display:grid; gap:1px; background:rgba(232,185,138,.22); border:1px solid rgba(232,185,138,.22); border-radius:3px; overflow:hidden; }
+.rail-kpi{ background:#1B0A12; padding:10px 12px; }
+.rail-kpi .rk-lbl{ font-size:10.5px; color:#D9B79A; }
+.rail-kpi .rk-val{ font-family:'IBM Plex Mono',monospace; font-size:17px; color:#FBF2E6; margin-top:3px; }
+.rail-kpi .rk-dl{ font-size:10.5px; margin-top:2px; }
+.rail-kpi .rk-dl.down{ color:#8FD3A3; } .rail-kpi .rk-dl.up{ color:#F09393; } .rail-kpi .rk-dl.flat{ color:#BFA88F; }
+
+/* ---------- responsive ---------- */
+@media (max-width:1180px){
+  /* score rail steps aside; HUD width and stage gutter stay in lockstep */
+  .display-mode .display-rail{ display:none; }
+  .display-mode .display-hud{ left:16px; width:clamp(272px,24vw,312px); }
+  .display-mode main.wrap{ padding-left:clamp(300px,27vw,344px); padding-right:16px; }
+}
+@media (max-width:860px){
+  /* the walk-through drops to a bar along the bottom; title block and QR step aside */
+  .display-mode main.wrap{ bottom:0; padding:12px 12px 210px; }
+  .display-mode .display-hud{ left:12px; right:12px; top:auto; width:auto;
+    bottom:calc(var(--dispBottom,46px) + 16px); }
+  .display-mode .display-titleblock, .display-mode .display-qr{ display:none; }
+  .display-mode .target-row{ grid-template-columns:1fr; gap:5px; }
+  .display-mode .targets{ gap:14px; }
+  .display-mode .tbar .marker::after{ display:none; }
+  .display-mode .kpi{ padding:14px 16px; }
+  .display-mode .panel-head h2{ font-size:19px; }
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="hbku-badge" title="Hamad Bin Khalifa University">
+      <span class="hbku-mark">HBKU</span>
+      <span class="hbku-sub">Hamad Bin Khalifa University</span>
+    </div>
+    <div class="hero-row">
+      <div>
+        <div class="eyebrow">STATE OF QATAR · WATER · ENERGY · FOOD NEXUS</div>
+        <h1>Nexus Technology<br>Portfolio Dashboard</h1>
+        <p class="sub">A policy planning tool for selecting and combining desalination, power generation, carbon management and
+        food-system technologies for Qatar — scored across economic, technical and environmental viability, and benchmarked
+        against national 2030 targets. Decision logic adapted from the energy–water–food nexus life-cycle methodology
+        developed by Al-Ansari (Imperial College London, 2016), recalibrated with current national data.</p>
+      </div>
+      <div class="hero-side">
+      <div class="hdr-actions">
+        <button class="tbtn" id="btnDisplay" type="button" aria-pressed="false" aria-label="Start display">Display</button>
+      </div>
+      <svg class="hero-diagram" width="168" height="168" viewBox="0 0 168 168" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <circle cx="84" cy="84" r="82" stroke="#8A4A57" stroke-width="1" stroke-dasharray="2 4"/>
+        <circle cx="84" cy="40" r="26" fill="#155A66" fill-opacity=".85"/>
+        <circle cx="52" cy="106" r="26" fill="#C17817" fill-opacity=".85"/>
+        <circle cx="116" cy="106" r="26" fill="#5B6B3B" fill-opacity=".85"/>
+        <text x="84" y="45" text-anchor="middle" font-family="IBM Plex Mono" font-size="10.5" fill="#F8F4EA">WATER</text>
+        <text x="52" y="111" text-anchor="middle" font-family="IBM Plex Mono" font-size="10.5" fill="#F8F4EA">ENERGY</text>
+        <text x="116" y="111" text-anchor="middle" font-family="IBM Plex Mono" font-size="10.5" fill="#F8F4EA">FOOD</text>
+      </svg>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="ticker">
+  <div class="wrap"><div class="ticker-inner" id="tickerRow"></div></div>
+</div>
+
+<main class="wrap">
+  <div class="layout">
+
+    <!-- ============ CONTROL RAIL ============ -->
+    <aside class="rail">
+      <div class="rail-head">
+        <h2>Build a portfolio</h2>
+        <p>Adjust the technology mix below. Every chart, score and target bar to the right updates live.</p>
+      </div>
+
+      <div class="presets">
+        <button data-preset="0"><span class="num">Scenario 1</span>Conventional (CCGT baseline)</button>
+        <button data-preset="1"><span class="num">Scenario 2</span>+ BIGCC power</button>
+        <button data-preset="2"><span class="num">Scenario 3</span>+ Biochar</button>
+        <button data-preset="3"><span class="num">Scenario 4</span>+ Carbon capture</button>
+        <button data-preset="4"><span class="num">Scenario 5</span>CC + standalone BIGCC</button>
+        <button data-preset="5"><span class="num">Scenario 6</span>BECCS (BIGCC+CC)</button>
+        <button data-preset="6"><span class="num">Scenario 7</span>Full PV + BECCS</button>
+        <button data-preset="custom" class="active"><span class="num">&nbsp;</span>Custom mix</button>
+      </div>
+
+      <div class="group">
+        <h3><span class="dot water"></span>Water sub-system</h3>
+        <div class="field">
+          <label>Reverse osmosis share of desalination <span class="val" id="v_ro">45%</span></label>
+          <input type="range" id="ro" min="0" max="100" value="45">
+          <div class="hint">Remainder assumed thermal (MSF/MED). Qatar National Environment &amp; Climate Change Strategy targets &gt;55% RO.</div>
+        </div>
+      </div>
+
+      <div class="group">
+        <h3><span class="dot energy"></span>Power generation mix</h3>
+        <div class="field">
+          <label>Solar PV share of nexus power <span class="val" id="v_pv">0%</span></label>
+          <input type="range" id="pv" min="0" max="100" value="0">
+        </div>
+        <div class="field">
+          <label style="margin-bottom:4px;">PV deployment scope</label>
+          <div class="seg" id="pvscope">
+            <button data-v="water" class="active">Water only</button>
+            <button data-v="both">Water + food</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>BIGCC (biomass gasification CCGT) share <span class="val" id="v_bigcc">0%</span></label>
+          <input type="range" id="bigcc" min="0" max="100" value="0">
+          <div class="hint">Qatar has limited domestic biomass feedstock — high BIGCC shares assume imported feedstock or municipal/agricultural waste streams.</div>
+        </div>
+        <div class="field">
+          <div class="toggle-row">
+            <label style="margin:0;">Treat BIGCC as 100% carbon-neutral</label>
+            <label class="switch"><input type="checkbox" id="closure" checked><span class="slider-tog"></span></label>
+          </div>
+          <div class="note">Thesis sensitivity: GWP roughly doubles under a 0% carbon-closure assumption for the same BIGCC share.</div>
+        </div>
+      </div>
+
+      <div class="group">
+        <h3><span class="dot carbon"></span>Carbon management</h3>
+        <div class="field">
+          <label style="margin-bottom:4px;">Carbon capture (CC) integration</label>
+          <div class="seg" id="ccscope">
+            <button data-v="none" class="active">None</button>
+            <button data-v="water">Water sub-system</button>
+            <button data-v="both">Water + food</button>
+          </div>
+          <div class="hint">Adds ~12% parasitic power load to the CCGT/BIGCC it is fitted to (captures ~85% of flue-gas CO₂).</div>
+        </div>
+        <div class="field" id="beccsField" style="opacity:.4;pointer-events:none;">
+          <div class="toggle-row">
+            <label style="margin:0;">Fit capture to BIGCC exhaust (BECCS)</label>
+            <label class="switch"><input type="checkbox" id="beccs"><span class="slider-tog"></span></label>
+          </div>
+          <div class="note">Only meaningful once BIGCC &gt; 0% and CC is engaged. Enables the negative-emissions pathway (Scenario 6/7 in the thesis).</div>
+        </div>
+      </div>
+
+      <div class="group">
+        <h3><span class="dot food"></span>Food sub-system</h3>
+        <div class="field">
+          <div class="toggle-row">
+            <label style="margin:0;">Biochar soil amendment</label>
+            <label class="switch"><input type="checkbox" id="biochar"><span class="slider-tog"></span></label>
+          </div>
+          <div class="note">Assumes ~50% improvement in water-use efficiency and ~50% synthetic-fertilizer offset (thesis assumption).</div>
+        </div>
+        <div class="field" style="margin-top:14px;">
+          <label style="margin-bottom:4px;">Livestock manure management</label>
+          <div class="seg" id="manure">
+            <button data-v="liquid" class="active">Liquid slurry</button>
+            <button data-v="dry">Dry lot</button>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ============ MAIN CONTENT ============ -->
+    <div class="content">
+
+      <section class="panel panel-targets">
+        <div class="panel-head">
+          <h2>Government target tracker</h2>
+          <span class="meta">where this portfolio stands against Qatar's 2030 strategy</span>
+        </div>
+        <div class="panel-body targets" id="targetsBody"></div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <h2>Portfolio viability</h2>
+          <span class="meta" id="portfolioLabel">CUSTOM MIX</span>
+        </div>
+        <div class="panel-body">
+          <div class="pillars">
+            <div class="pillar econ">
+              <div class="tag">Economic</div>
+              <div class="score" id="econScore">–</div>
+              <div class="bar"><i id="econBar" style="width:0%"></i></div>
+              <ul id="econList"></ul>
+            </div>
+            <div class="pillar tech">
+              <div class="tag">Technical</div>
+              <div class="score" id="techScore">–</div>
+              <div class="bar"><i id="techBar" style="width:0%"></i></div>
+              <ul id="techList"></ul>
+            </div>
+            <div class="pillar env">
+              <div class="tag">Environmental</div>
+              <div class="score" id="envScore">–</div>
+              <div class="bar"><i id="envBar" style="width:0%"></i></div>
+              <ul id="envList"></ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <h2>Nexus impact — key indicators</h2>
+          <span class="meta">vs. all-CCGT / 45% RO baseline</span>
+        </div>
+        <div class="kpi-grid" id="kpiGrid"></div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head"><h2>Where the portfolio sits</h2><span class="meta">radar · scenario comparison</span></div>
+        <div class="panel-body chart-row">
+          <div>
+            <div class="chart-box" id="radarChart"></div>
+          </div>
+          <div>
+            <div class="chart-box" id="scenarioChart"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head"><h2>GHG emissions pathway</h2><span class="meta">EWF nexus scope, Mt CO₂e / year</span></div>
+        <div class="panel-body">
+          <div class="chart-box tall" id="waterfallChart"></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <h2>Portfolio optimizer</h2>
+          <span class="meta">weighted multi-criteria search</span>
+        </div>
+        <div class="panel-body">
+          <p style="font-size:13px;color:var(--ink-soft);max-width:74ch;line-height:1.55;margin-top:0;">
+            Set how much each pillar matters to your decision. The optimizer evaluates thousands of technology
+            combinations across the same decision variables on the left (RO share, PV share &amp; scope, BIGCC share
+            &amp; closure assumption, carbon capture scope, biochar) and ranks the portfolios that best match your
+            priorities — the systems-engineering "superstructure" approach the thesis uses to compare configurations,
+            run here as a live grid search.
+          </p>
+          <div class="opt-controls">
+            <div class="field" style="margin:0;">
+              <label>Economic weight <span class="val" id="v_we">33%</span></label>
+              <input type="range" id="we" min="0" max="100" value="33">
+            </div>
+            <div class="field" style="margin:0;">
+              <label>Technical weight <span class="val" id="v_wt">33%</span></label>
+              <input type="range" id="wt" min="0" max="100" value="33">
+            </div>
+            <div class="field" style="margin:0;">
+              <label>Environmental weight <span class="val" id="v_wv">34%</span></label>
+              <input type="range" id="wv" min="0" max="100" value="34">
+            </div>
+            <button id="runOpt">Run optimizer</button>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="rank" id="rankTable">
+              <thead>
+                <tr><th>#</th><th>Portfolio</th><th>Match score</th><th>Econ</th><th>Tech</th><th>Env</th><th>GWP (Mt/yr)</th><th></th></tr>
+              </thead>
+              <tbody id="rankBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head"><h2>About this model</h2></div>
+        <div class="panel-body about">
+          <h4>Source logic</h4>
+          <p>The relative effect of each technology — solar PV displacing CCGT, BIGCC treated as carbon-neutral,
+          the ~12% parasitic energy load of carbon capture, the negative-emission credit from BIGCC+CC (BECCS), and the
+          water/fertilizer offset from biochar — follows the seven-scenario life-cycle comparison in Al-Ansari, T. (2016),
+          <i>"Development of a Nexus Framework for the Assessment of Water, Energy and Food Systems,"</i> PhD thesis,
+          Imperial College London, which modelled Qatar's energy–water–food nexus under a domestic food-production
+          target. The uploaded document was used directly to derive these technology-effectiveness ratios (Chapters 6–10).</p>
+          <h4>Current data anchors</h4>
+          <p>Baseline magnitudes are recalibrated to public 2024–2026 figures rather than the thesis's 2016 estimates:
+          solar capacity and Al Kharsaah / Ras Laffan / Mesaieed LCOE bids (QatarEnergy, TotalEnergies, pv magazine),
+          Kahramaa peak water production and RO/thermal desalination mix, the National Food Security Strategy 2030
+          self-sufficiency targets (Ministry of Municipality), and the 2030 Nationally Determined Contribution of a 25%
+          GHG reduction versus business-as-usual (Ministry of Environment &amp; Climate Change / UNFCCC).</p>
+          <h4>What this is — and isn't</h4>
+          <p>This is an <b>illustrative planning-support model</b>: it reproduces the direction, relative magnitude and
+          interaction effects the thesis identifies (e.g. PV cutting nexus GWP by roughly a quarter, full BECCS
+          integration cutting it by &gt;95%, carbon capture adding a natural-gas penalty even as it cuts GWP) scaled onto
+          current national baselines. It is not a certified engineering cost model or a substitute for a full
+          mixed-integer optimization of the kind the thesis's superstructure was built to support — treat absolute
+          dollar and tonnage figures as indicative, and revisit with QatarEnergy / Kahramaa / MME engineering data before
+          any investment decision.</p>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</main>
+
+
+<script>
+/* ============================================================
+   BASELINE CONSTANTS  (documented in "About this model")
+   ============================================================ */
+const BASE = {
+  // GWP split of the conventional (Scenario 1a, liquid-slurry) case, kg CO2e/yr, scaled ~1.3x
+  // from thesis 2016 figures to reflect the more ambitious 2030 food-security production targets.
+  gwpNonEnergyLiquid: 1.63e9,
+  gwpNonEnergyDry:     1.98e9,
+  gwpEnergyMaxCCGT:    0.60e9,   // fully CCGT-powered water+food energy emissions
+  toxNonEnergy:        2.2e6,
+  toxEnergyMaxCCGT:    1.15e8,
+  acidBase:            4.6e7,
+  landAgri:            9420,      // ha, thesis figure
+  ngBaselineKg:         2.05e8,   // kg/yr natural gas at 45% RO / 100% CCGT
+  waterIrrigationM3:   2.05e8,    // m3/yr indicative irrigation demand
+  waterDesalM3:        7.08e8,    // m3/yr Kahramaa peak-based estimate
+  specEnergyRO: 46,                // MJ/m3, CCGT-RO family (thesis Table 10-1 average)
+  specEnergyMSF: 280,               // MJ/m3, thermal family average (thesis Table 10-1)
+  ccParasiticFrac: 0.117,           // thesis Table 10-10
+  ccCaptureRate: 0.85,
+  pvLandHaPerMW: 1.25,              // Al Kharsaah: 1,000 ha / 800 MW
+  lcoePV: 15,        // $/MWh (Al Kharsaah / Ras Laffan / Mesaieed record low bids)
+  lcoeCCGT: 30,       // $/MWh (mid of published efficient-CCGT range for Qatar network)
+  lcoeBIGCC: 112,     // $/MWh (indicative — immature at scale, feedstock-constrained)
+  ccAdderPerMWh: 18,  // $/MWh cost adder on CC-fitted generation
+  roUnitCost: 0.6,    // $/m3
+  msfUnitCost: 1.25,  // $/m3
+  ngNetbackPerKg: 0.40, // $/kg — indicative LNG export netback value of gas freed domestically
+  nexusPowerMWh: 1.5e6, // MWh/yr indicative total nexus (water+food) power demand at baseline
+};
+
+// technology readiness levels (qualitative, 1-9) used in technical score
+const TRL = { ro:9, msf:9, ccgt:9, pv:9, bigcc:6.5, cc:7.5, biochar:6.5 };
+
+/* ============================================================
+   STATE
+   ============================================================ */
+let state = {
+  ro: 45, pv: 0, pvScope: 'water', bigcc: 0, closure: true,
+  ccScope: 'none', biochar: false, manure: 'liquid', beccs: false
+};
+
+const PRESETS = [
+  {label:'Scenario 1', state:{ro:45, pv:0, pvScope:'water', bigcc:0,  closure:true, ccScope:'none', biochar:false, manure:'liquid', beccs:false}},
+  {label:'Scenario 2', state:{ro:55, pv:0, pvScope:'water', bigcc:60, closure:true, ccScope:'none', biochar:false, manure:'liquid', beccs:false}},
+  {label:'Scenario 3', state:{ro:55, pv:0, pvScope:'water', bigcc:60, closure:true, ccScope:'none', biochar:true,  manure:'liquid', beccs:false}},
+  {label:'Scenario 4', state:{ro:55, pv:0, pvScope:'water', bigcc:0,  closure:true, ccScope:'both', biochar:false, manure:'liquid', beccs:false}},
+  {label:'Scenario 5', state:{ro:55, pv:0, pvScope:'water', bigcc:60, closure:true, ccScope:'both', biochar:false, manure:'liquid', beccs:false}, note:'CC fitted to CCGT; BIGCC remains stand-alone'},
+  {label:'Scenario 6', state:{ro:55, pv:0, pvScope:'water', bigcc:60, closure:true, ccScope:'both', biochar:false, manure:'liquid', beccs:true},  note:'CC fitted to the BIGCC exhaust (BECCS)'},
+  {label:'Scenario 7', state:{ro:70, pv:80, pvScope:'both', bigcc:60, closure:true, ccScope:'both', biochar:true,  manure:'liquid', beccs:true},  note:'Full PV rollout + BECCS'},
+];
+
+/* ============================================================
+   CORE MODEL
+   ============================================================ */
+function computeMetrics(s){
+  const roF = s.ro/100, pvF = s.pv/100, bigccF = s.bigcc/100;
+  const closureFactor = s.closure ? 0.95 : 0.55; // decarbonisation effectiveness of BIGCC
+  const pvOnFood = s.pvScope === 'both';
+  const ccOnWater = s.ccScope === 'water' || s.ccScope === 'both';
+  const ccOnFood = s.ccScope === 'both';
+
+  // --- specific energy blend for desal (technical + scales energy-related GWP/NG) ---
+  const specEnergy = roF*BASE.specEnergyRO + (1-roF)*BASE.specEnergyMSF;
+  const specEnergyAtBaseline = 0.45*BASE.specEnergyRO + 0.55*BASE.specEnergyMSF;
+  const energyScale = specEnergy / specEnergyAtBaseline; // >1 if less RO than baseline
+
+  // --- decarbonisation of the water & food power fractions ---
+  // "served fraction" decarbonised by PV then BIGCC (order doesn't matter, cap at 1)
+  const waterDecarb = Math.min(1, pvF + bigccF*closureFactor);
+  const foodDecarb  = Math.min(1, (pvOnFood ? pvF : 0) + bigccF*closureFactor);
+
+  let gwpEnergyWater = BASE.gwpEnergyMaxCCGT*0.55*energyScale*(1-waterDecarb);
+  let gwpEnergyFood  = BASE.gwpEnergyMaxCCGT*0.45*energyScale*(1-foodDecarb);
+
+  // carbon capture: captures 85% of whatever fossil (CCGT) fraction remains, adds parasitic load back
+  const gwpNonEnergyBase = s.manure==='liquid' ? BASE.gwpNonEnergyLiquid : BASE.gwpNonEnergyDry;
+  const gwpNonEnergy = gwpNonEnergyBase * (s.biochar ? 0.93 : 1);
+
+  const isBeccs = s.beccs && s.bigcc>0 && (ccOnWater||ccOnFood) && s.closure;
+  let beccsCredit = 0;
+  if (ccOnWater){
+    gwpEnergyWater *= (1-BASE.ccCaptureRate);
+    gwpEnergyWater += BASE.gwpEnergyMaxCCGT*0.55*BASE.ccParasiticFrac*energyScale;
+    if (isBeccs) beccsCredit += BASE.gwpEnergyMaxCCGT*0.55*bigccF*BASE.ccCaptureRate*0.9;
+  }
+  if (ccOnFood){
+    gwpEnergyFood *= (1-BASE.ccCaptureRate);
+    gwpEnergyFood += BASE.gwpEnergyMaxCCGT*0.45*BASE.ccParasiticFrac*energyScale;
+    if (isBeccs) beccsCredit += BASE.gwpEnergyMaxCCGT*0.45*bigccF*BASE.ccCaptureRate*0.9;
+  }
+  // additional biogenic/manure-capture credit when carbon capture is fitted to the BIGCC exhaust itself
+  // (BECCS) — reflects the thesis finding that ~50% manure capture at 100% carbon closure can balance
+  // most of the enteric-fermentation GWP (Section 10.2.1 / Figure 10-19).
+  if (isBeccs){
+    const ccReach = (ccOnWater?0.55:0)+(ccOnFood?0.45:0);
+    beccsCredit += gwpNonEnergyBase * bigccF * ccReach * 0.85;
+  }
+
+  const gwpTotalKg = Math.max(gwpNonEnergy + gwpEnergyWater + gwpEnergyFood - beccsCredit, gwpNonEnergyBase*0.012);
+  const gwpMt = gwpTotalKg/1e9; // kg -> Mt CO2e (1 Mt = 1e9 kg)
+
+  // --- human toxicity ---
+  const toxDecarbWater = waterDecarb + (ccOnWater? (1-waterDecarb)*0.6:0);
+  const toxDecarbFood  = foodDecarb  + (ccOnFood ? (1-foodDecarb)*0.6:0);
+  let tox = BASE.toxNonEnergy*(s.biochar?0.35:1) + BASE.toxEnergyMaxCCGT*0.5*(1-Math.min(1,toxDecarbWater)) + BASE.toxEnergyMaxCCGT*0.5*(1-Math.min(1,toxDecarbFood));
+
+  // --- acidification: livestock-dominated, only modestly responsive ---
+  const acid = BASE.acidBase * (1 - 0.12*Math.min(1,(waterDecarb+foodDecarb)/2) - (s.biochar?0.02:0));
+
+  // --- natural gas: baseline scaled by energyScale & decarbonisation, credit if BIGCC exports surplus ---
+  let ng = BASE.ngBaselineKg*energyScale*(1-(waterDecarb*0.55+foodDecarb*0.45));
+  if (ccOnWater||ccOnFood) ng += BASE.ngBaselineKg*BASE.ccParasiticFrac*((ccOnWater?0.55:0)+(ccOnFood?0.45:0));
+  if (bigccF>0.5 && s.biochar) ng -= BASE.ngBaselineKg*0.28*(bigccF-0.5)*2; // credit / export surplus at high BIGCC+biochar
+
+  // --- land ---
+  const pvCapacityMW = pvF * (pvOnFood? 1:0.6) * 900; // indicative capacity scale
+  const land = BASE.landAgri + pvCapacityMW*BASE.pvLandHaPerMW;
+
+  // --- water footprint ---
+  const irrigation = BASE.waterIrrigationM3 * (s.biochar? 0.5:1);
+  const processWater = BASE.waterDesalM3*0.02*(bigccF+ (ccOnWater||ccOnFood?0.5:0));
+  const waterTotal = irrigation + processWater;
+
+  /* ---------------- ECONOMIC ---------------- */
+  const blendedLcoe = (1-Math.min(1,waterDecarb*0.55+foodDecarb*0.45))*BASE.lcoeCCGT*0 // placeholder to keep structure clear
+      + pvF*BASE.lcoePV*(pvOnFood?1:0.55)
+      + bigccF*BASE.lcoeBIGCC*0.6
+      + (1-Math.min(1,pvF*(pvOnFood?1:0.55)+bigccF*0.6))*BASE.lcoeCCGT;
+  const ccCostAdder = ((ccOnWater?0.55:0)+(ccOnFood?0.45:0))*BASE.ccAdderPerMWh;
+  const totalLcoe = blendedLcoe + ccCostAdder;
+  const annualPowerCost = totalLcoe*BASE.nexusPowerMWh;
+  const baselinePowerCost = BASE.lcoeCCGT*BASE.nexusPowerMWh;
+  const desalUnitCost = roF*BASE.roUnitCost + (1-roF)*BASE.msfUnitCost;
+  const desalAnnualCost = desalUnitCost*BASE.waterDesalM3;
+  const ngValue = -(ng-BASE.ngBaselineKg)*BASE.ngNetbackPerKg; // positive = export revenue gained
+  const netAnnualCostDelta = (annualPowerCost-baselinePowerCost) + ngValue*-1; // cost minus revenue gained
+
+  /* ---------------- SCORES (0-100, higher=better) ---------------- */
+  // normalised against sensible fixed ranges so numbers are stable across the whole decision space
+  const econScore = clamp(100 - ((totalLcoe-BASE.lcoePV)/(BASE.lcoeBIGCC-BASE.lcoePV))*70 - Math.max(0,(netAnnualCostDelta)/6e7)*30 + (ngValue>0? Math.min(15,ngValue/3e6):0));
+  const trlAvg = weightedTRL(s, waterDecarb, foodDecarb, ccOnWater, ccOnFood);
+  const techScore = clamp( (trlAvg-5)/4*55 + (1-Math.min(1,(specEnergy-39)/(280-39)))*30 + (s.biochar?5:0) + ((ccOnWater||ccOnFood)?-6:0) + (bigccF>0.6?-5:0) + 15 );
+  const envScore = clamp(100*(1 - gwpMt/2.9) );
+
+  return {
+    gwpMt, tox, acid, ng, land, waterTotal, irrigation, processWater,
+    specEnergy, totalLcoe, desalUnitCost, annualPowerCost, desalAnnualCost, ngValue, netAnnualCostDelta,
+    econScore, techScore, envScore, trlAvg, waterDecarb, foodDecarb
+  };
+}
+
+function weightedTRL(s, waterDecarb, foodDecarb, ccOnWater, ccOnFood){
+  const roF=s.ro/100, pvF=s.pv/100, bigccF=s.bigcc/100;
+  let sum=0, wt=0;
+  sum += TRL.ro*roF + TRL.msf*(1-roF); wt+=1;
+  sum += TRL.pv*pvF + TRL.ccgt*(1-pvF); wt+=1;
+  if (bigccF>0){ sum += TRL.bigcc*bigccF + TRL.ccgt*(1-bigccF); wt+=1; }
+  if (ccOnWater||ccOnFood){ sum += TRL.cc; wt+=1; }
+  if (s.biochar){ sum += TRL.biochar; wt+=1; }
+  return sum/wt;
+}
+function clamp(v){ return Math.max(2, Math.min(98, v)); }
+
+/* fix Mt conversion: gwpTotalKg is in kg; 1 Mt = 1e9 kg */
+function fixMt(kg){ return kg/1e9; }
+
+/* ============================================================
+   RENDER
+   ============================================================ */
+/* ============================================================
+   LIGHTWEIGHT SVG CHART BUILDERS (no external chart library —
+   keeps the dashboard fully self-contained and CDN-independent)
+   ============================================================ */
+function svgRadar(labelsArr, datasets, size=300){
+  const n = labelsArr.length;
+  const cx=size/2, cy=size/2-6, R=size*0.32;
+  const angleStep = (Math.PI*2)/n, startAngle=-Math.PI/2;
+  const pt=(i,val)=>{ const r=R*(Math.max(0,Math.min(100,val))/100), a=startAngle+i*angleStep; return [cx+r*Math.cos(a), cy+r*Math.sin(a)]; };
+  const axisPt=(i,rr)=>{ const a=startAngle+i*angleStep; return [cx+rr*Math.cos(a), cy+rr*Math.sin(a)]; };
+  let grid='';
+  [25,50,75,100].forEach(g=>{
+    let pts=[]; for(let i=0;i<n;i++) pts.push(axisPt(i,R*g/100).join(','));
+    grid+=`<polygon points="${pts.join(' ')}" fill="none" stroke="#D9CFB8" stroke-width="1"/>`;
+  });
+  let axes='', labels='';
+  for(let i=0;i<n;i++){
+    const [x,y]=axisPt(i,R);
+    axes+=`<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="#D9CFB8" stroke-width="1"/>`;
+    const [lx,ly]=axisPt(i,R+26);
+    labels+=`<text x="${lx}" y="${ly}" font-size="10" font-family="IBM Plex Sans" fill="#5B5245" text-anchor="middle" dominant-baseline="middle">${labelsArr[i]}</text>`;
+  }
+  let polys='';
+  datasets.forEach(ds=>{
+    let pts=[]; for(let i=0;i<n;i++) pts.push(pt(i,ds.values[i]).join(','));
+    polys+=`<polygon points="${pts.join(' ')}" fill="${ds.color}" fill-opacity="0.16" stroke="${ds.color}" stroke-width="2" ${ds.dash?`stroke-dasharray="${ds.dash}"`:''}/>`;
+    for(let i=0;i<n;i++){ const [x,y]=pt(i,ds.values[i]); polys+=`<circle cx="${x}" cy="${y}" r="2.8" fill="${ds.color}"/>`; }
+  });
+  let legend='';
+  datasets.forEach((ds,i)=>{
+    const ly=size+16, lx=8+i*150;
+    legend+=`<rect x="${lx}" y="${ly-9}" width="10" height="10" fill="${ds.color}"/><text x="${lx+14}" y="${ly}" font-size="11" font-family="IBM Plex Sans" fill="#241C16">${ds.name}</text>`;
+  });
+  return `<svg viewBox="0 0 ${size} ${size+30}" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">${grid}${axes}${polys}${labels}${legend}</svg>`;
+}
+
+function svgBar(labelsArr, values, colors, title){
+  const w=520,h=300, padL=42,padR=14,padT=30,padB=46;
+  const plotW=w-padL-padR, plotH=h-padT-padB;
+  const maxV = Math.max(...values,0.01)*1.18;
+  const n=values.length, gap=plotW/n, bw=gap*0.6;
+  let grid='', bars='', labels='';
+  [0,0.25,0.5,0.75,1].forEach(f=>{
+    const y=padT+plotH*(1-f);
+    grid+=`<line x1="${padL}" y1="${y}" x2="${w-padR}" y2="${y}" stroke="#EDE6D4" stroke-width="1"/>`;
+    grid+=`<text x="${padL-6}" y="${y+3}" font-size="8.5" text-anchor="end" font-family="IBM Plex Mono" fill="#5B5245">${(maxV*f).toFixed(1)}</text>`;
+  });
+  values.forEach((v,i)=>{
+    const x=padL+gap*i+(gap-bw)/2, bh=Math.max(1,plotH*(v/maxV)), y=padT+plotH-bh;
+    bars+=`<rect x="${x}" y="${y}" width="${bw}" height="${bh}" fill="${colors[i]}" rx="2"/>`;
+    bars+=`<text x="${x+bw/2}" y="${y-5}" font-size="9.5" text-anchor="middle" font-family="IBM Plex Mono" fill="#241C16">${v}</text>`;
+    labelsArr[i].split('\n').forEach((ln,li)=>{
+      labels+=`<text x="${x+bw/2}" y="${padT+plotH+14+li*10}" font-size="8.6" text-anchor="middle" font-family="IBM Plex Mono" fill="#5B5245">${ln}</text>`;
+    });
+  });
+  const t = title? `<text x="${w/2}" y="14" font-size="11.5" text-anchor="middle" font-family="IBM Plex Sans" font-weight="600" fill="#5B5245">${title}</text>`:'';
+  return `<svg viewBox="0 0 ${w} ${h}" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">${t}${grid}${bars}${labels}</svg>`;
+}
+
+function svgHBar(labelsArr, values, colors, xLabel){
+  const w=560,h=220, padL=185,padR=56,padT=16,padB=34;
+  const plotW=w-padL-padR, plotH=h-padT-padB;
+  const maxV=Math.max(...values,0.01)*1.15;
+  const n=values.length, gap=plotH/n, bh=gap*0.5;
+  let grid='', bars='', labels='';
+  [0,0.25,0.5,0.75,1].forEach(f=>{
+    const x=padL+plotW*f;
+    grid+=`<line x1="${x}" y1="${padT}" x2="${x}" y2="${padT+plotH}" stroke="#EDE6D4" stroke-width="1"/>`;
+  });
+  values.forEach((v,i)=>{
+    const y=padT+gap*i+(gap-bh)/2, bw=Math.max(1,plotW*(v/maxV));
+    bars+=`<rect x="${padL}" y="${y}" width="${bw}" height="${bh}" fill="${colors[i]}" rx="3"/>`;
+    bars+=`<text x="${padL+bw+8}" y="${y+bh/2+4}" font-size="11.5" font-family="IBM Plex Mono" fill="#241C16">${v.toFixed(2)}</text>`;
+    labels+=`<text x="${padL-10}" y="${y+bh/2+4}" font-size="11.5" text-anchor="end" font-family="IBM Plex Sans" fill="#241C16">${labelsArr[i]}</text>`;
+  });
+  const axisLabel=`<text x="${padL+plotW/2}" y="${h-6}" font-size="10.5" text-anchor="middle" font-family="IBM Plex Sans" fill="#5B5245">${xLabel}</text>`;
+  return `<svg viewBox="0 0 ${w} ${h}" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">${grid}${bars}${labels}${axisLabel}</svg>`;
+}
+
+function fmt(n, d=0){ return n.toLocaleString(undefined,{maximumFractionDigits:d, minimumFractionDigits:d}); }
+function fmtM(n){ return (n/1e6).toFixed(1)+'M'; }
+
+function recompute(s){ return computeMetrics(s); }
+
+function render(){
+  const c = recompute(state);
+  paintPillars(c);
+  paintKPIs(c);
+  paintRadar(c);
+  paintScenarioChart(c);
+  paintWaterfall(c);
+  paintTargets(c);
+}
+
+function paintPillars(c){
+  document.getElementById('econScore').textContent = Math.round(c.econScore);
+  document.getElementById('techScore').textContent = Math.round(c.techScore);
+  document.getElementById('envScore').textContent = Math.round(c.envScore);
+  document.getElementById('econBar').style.width = c.econScore+'%';
+  document.getElementById('techBar').style.width = c.techScore+'%';
+  document.getElementById('envBar').style.width = c.envScore+'%';
+
+  document.getElementById('econList').innerHTML = `
+    <li>Blended LCOE <b>$${c.totalLcoe.toFixed(1)}/MWh</b></li>
+    <li>Annual power cost Δ <b>${c.annualPowerCost-BASE.lcoeCCGT*BASE.nexusPowerMWh>=0?'+':''}$${fmtM(c.annualPowerCost-BASE.lcoeCCGT*BASE.nexusPowerMWh)}</b></li>
+    <li>LNG netback from NG saved <b>$${fmtM(Math.max(0,c.ngValue))}</b></li>
+    <li>Desal unit cost <b>$${c.desalUnitCost.toFixed(2)}/m³</b></li>`;
+  document.getElementById('techList').innerHTML = `
+    <li>Weighted TRL <b>${c.trlAvg.toFixed(1)} / 9</b></li>
+    <li>Specific desal energy <b>${c.specEnergy.toFixed(0)} MJ/m³</b></li>
+    <li>Water sub-system decarbonised <b>${Math.round(c.waterDecarb*100)}%</b></li>
+    <li>Food sub-system decarbonised <b>${Math.round(c.foodDecarb*100)}%</b></li>`;
+  document.getElementById('envList').innerHTML = `
+    <li>GWP <b>${c.gwpMt.toFixed(2)} Mt CO₂e/yr</b></li>
+    <li>Human toxicity <b>${(c.tox/1e6).toFixed(1)}M kg 1,4-DCB eq</b></li>
+    <li>Land footprint <b>${fmt(c.land)} ha</b></li>
+    <li>Water footprint <b>${(c.waterTotal/1e6).toFixed(0)}M m³/yr</b></li>`;
+}
+
+function kpiRow(label, rawValue, baseValue, unit, lowerIsBetter=true, displayValue=null){
+  const delta = rawValue-baseValue;
+  const pct = baseValue!==0 ? (delta/Math.abs(baseValue))*100 : 0;
+  let cls='flat', arrow='→';
+  if (Math.abs(pct)>1){
+    const improved = lowerIsBetter ? delta<0 : delta>0;
+    cls = improved?'down':'up';
+    arrow = delta<0?'↓':'↑';
+  }
+  return `<div class="kpi">
+    <div class="lbl">${label}</div>
+    <div class="num">${displayValue!==null?displayValue:rawValue}${unit}</div>
+    <div class="delta ${cls}">${arrow} ${Math.abs(pct).toFixed(0)}% vs baseline</div>
+  </div>`;
+}
+
+function paintKPIs(c){
+  const base = recompute({ro:45,pv:0,pvScope:'water',bigcc:0,closure:true,ccScope:'none',biochar:false,manure:'liquid',beccs:false});
+  const grid = document.getElementById('kpiGrid');
+  grid.innerHTML =
+    kpiRow('GWP', +c.gwpMt.toFixed(2), base.gwpMt, ' Mt/yr') +
+    kpiRow('Natural gas', +(c.ng/1e6).toFixed(1), base.ng/1e6, 'M kg/yr') +
+    kpiRow('Human toxicity', +(c.tox/1e6).toFixed(1), base.tox/1e6, 'M kg-eq') +
+    kpiRow('Acidification', +(c.acid/1e6).toFixed(1), base.acid/1e6, 'M kg SO₂-eq') +
+    kpiRow('Land footprint', Math.round(c.land), base.land, ' ha', true, fmt(c.land)) +
+    kpiRow('Water footprint', +(c.waterTotal/1e6).toFixed(0), base.waterTotal/1e6, 'M m³/yr') +
+    kpiRow('Specific desal energy', +c.specEnergy.toFixed(0), base.specEnergy, ' MJ/m³') +
+    kpiRow('Blended LCOE', +c.totalLcoe.toFixed(1), base.totalLcoe, ' $/MWh');
+}
+
+function paintRadar(c){
+  const b = recompute({ro:45,pv:0,pvScope:'water',bigcc:0,closure:true,ccScope:'none',biochar:false,manure:'liquid',beccs:false});
+  const waterEffScore = v => Math.min(100,100-(v.waterTotal/(BASE.waterIrrigationM3+BASE.waterDesalM3*0.02))*30);
+  const labels=['Economic','Technical','Environmental','Emissions cut','Resource efficiency','Readiness'];
+  const datasets=[
+    { name:'Your portfolio', color:'#155A66',
+      values:[c.econScore, c.techScore, c.envScore, Math.min(100,(1-c.gwpMt/2.9)*100), waterEffScore(c), (c.trlAvg/9)*100] },
+    { name:'Baseline (Scenario 1)', color:'#7A1330', dash:'4,3',
+      values:[b.econScore, b.techScore, b.envScore, Math.min(100,(1-b.gwpMt/2.9)*100), waterEffScore(b), (b.trlAvg/9)*100] }
+  ];
+  document.getElementById('radarChart').innerHTML = svgRadar(labels, datasets);
+}
+
+const SCENARIO_LABELS = ['S1\nBase','S2\n+BIGCC','S3\n+Biochar','S4\n+CC','S5\nCC+BIGCC','S6\nBECCS','S7\nFull+BECCS','Your\nmix'];
+function paintScenarioChart(c){
+  const vals = PRESETS.map(p=> +recompute(p.state).gwpMt.toFixed(2));
+  vals.push(+c.gwpMt.toFixed(2));
+  const colors = PRESETS.map(()=>'#C4B79A').concat(['#7A1330']);
+  document.getElementById('scenarioChart').innerHTML = svgBar(SCENARIO_LABELS.slice(), vals, colors, "GWP across the thesis' seven scenarios vs your mix (Mt CO₂e/yr)");
+}
+
+function paintWaterfall(c){
+  const base = recompute({ro:45,pv:0,pvScope:'water',bigcc:0,closure:true,ccScope:'none',biochar:false,manure:'liquid',beccs:false});
+  const ndcLine = base.gwpMt*0.75; // illustrative -25% marker relative to this subsystem's own baseline
+  const labels = ['Baseline (all-CCGT)','Your portfolio','2030 NDC-equivalent (-25%)'];
+  const vals = [base.gwpMt, c.gwpMt, ndcLine];
+  document.getElementById('waterfallChart').innerHTML = svgHBar(labels, vals, ['#C4B79A','#155A66','#5B6B3B'], 'Mt CO₂e / yr (EWF nexus scope)');
+}
+
+function targetBar(name, sub, current, target, max, unit, invert=false){
+  /* callers pass `current` pre-formatted ("45%"), which made (current/max) NaN
+     and left every progress fill at zero width — parse the number back out. */
+  const currentNum = parseFloat(current);
+  const pct = Math.max(0,Math.min(100, (currentNum/max)*100));
+  const markerPct = Math.max(0,Math.min(100,(target/max)*100));
+  return `<div class="target-row">
+    <div class="tname">${name}<span>${sub}</span></div>
+    <div class="tbar"><div class="fill" style="width:${pct}%;background:${invert? '#5B6B3B':'#155A66'}"></div><div class="marker" data-lbl="2030 target" style="left:${markerPct}%"></div></div>
+    <div class="tval">${current}${unit}</div>
+  </div>`;
+}
+
+function paintTargets(c){
+  const gwpBase = recompute({ro:45,pv:0,pvScope:'water',bigcc:0,closure:true,ccScope:'none',biochar:false,manure:'liquid',beccs:false}).gwpMt;
+  const ghgReduction = Math.max(0, (1 - c.gwpMt/gwpBase)*100);
+  const roShare = state.ro;
+  const solarShare = state.pv;
+  const irrigationCut = (1 - c.irrigation/BASE.waterIrrigationM3)*100;
+
+  document.getElementById('targetsBody').innerHTML = [
+    targetBar('Nexus GHG reduction','vs. all-CCGT baseline · national NDC pledge is -25% GHG by 2030 vs BAU', ghgReduction.toFixed(0)+'%', 25, 100, '', true),
+    targetBar('RO share of desalination','Qatar National Environment & Climate Change Strategy target: >55%', roShare+'%', 55, 100, '', true),
+    targetBar('Solar in power mix (this portfolio)','QatarEnergy sustainability strategy: 4,000 MW by 2030 (~30% of peak demand)', solarShare+'%', 30, 100, '', true),
+    targetBar('Groundwater / irrigation cut','National Food Security Strategy 2030: -70% groundwater extraction for agriculture', irrigationCut.toFixed(0)+'%', 70, 100, '', true),
+  ].join('');
+}
+
+/* ============================================================
+   TICKER
+   ============================================================ */
+function paintTicker(){
+  const items = [
+    ['NDC target','-25% GHG by 2030 (vs BAU)'],
+    ['Solar capacity','1,675 MW online → 4,000 MW by 2030'],
+    ['RO desal target','>55% of desalinated water'],
+    ['Vegetable self-sufficiency','39% (2024) → 55% (2030)'],
+    ['Fish self-sufficiency','~65% (2024) → 80% (2030)'],
+    ['Groundwater for agriculture','-70% by 2030'],
+  ];
+  document.getElementById('tickerRow').innerHTML = items.map(([l,v])=>`<div class="tick">${l}<b>${v}</b></div>`).join('');
+}
+
+/* ============================================================
+   WIRING
+   ============================================================ */
+function segWire(id, key){
+  const el = document.getElementById(id);
+  el.querySelectorAll('button').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      el.querySelectorAll('button').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      state[key] = btn.dataset.v;
+      if (key==='ccScope') refreshBeccsAvailability();
+      setCustom();
+      render();
+    });
+  });
+}
+function setSeg(id, value){
+  const el = document.getElementById(id);
+  el.querySelectorAll('button').forEach(b=> b.classList.toggle('active', b.dataset.v===value));
+}
+function setCustom(){
+  document.querySelectorAll('.presets button').forEach(b=>b.classList.remove('active'));
+  document.querySelector('.presets button[data-preset="custom"]').classList.add('active');
+  document.getElementById('portfolioLabel').textContent = 'CUSTOM MIX';
+}
+
+['ro','pv','bigcc'].forEach(id=>{
+  document.getElementById(id).addEventListener('input', e=>{
+    state[id] = +e.target.value;
+    document.getElementById('v_'+id).textContent = e.target.value+'%';
+    refreshBeccsAvailability();
+    setCustom();
+    render();
+  });
+});
+document.getElementById('closure').addEventListener('change', e=>{ state.closure = e.target.checked; setCustom(); render(); });
+document.getElementById('biochar').addEventListener('change', e=>{ state.biochar = e.target.checked; setCustom(); render(); });
+document.getElementById('beccs').addEventListener('change', e=>{ state.beccs = e.target.checked; setCustom(); render(); });
+segWire('pvscope','pvScope');
+segWire('ccscope','ccScope');
+segWire('manure','manure');
+
+function refreshBeccsAvailability(){
+  const enabled = state.bigcc>0 && state.ccScope!=='none';
+  const field = document.getElementById('beccsField');
+  field.style.opacity = enabled? '1':'.4';
+  field.style.pointerEvents = enabled? 'auto':'none';
+  if (!enabled){ state.beccs=false; document.getElementById('beccs').checked=false; }
+}
+
+document.querySelectorAll('.presets button[data-preset]').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    if (btn.dataset.preset==='custom') return;
+    const idx = +btn.dataset.preset;
+    const p = PRESETS[idx];
+    state = Object.assign({}, p.state);
+    document.getElementById('ro').value = state.ro; document.getElementById('v_ro').textContent = state.ro+'%';
+    document.getElementById('pv').value = state.pv; document.getElementById('v_pv').textContent = state.pv+'%';
+    document.getElementById('bigcc').value = state.bigcc; document.getElementById('v_bigcc').textContent = state.bigcc+'%';
+    document.getElementById('closure').checked = state.closure;
+    document.getElementById('biochar').checked = state.biochar;
+    setSeg('pvscope', state.pvScope);
+    setSeg('ccscope', state.ccScope);
+    setSeg('manure', state.manure);
+    refreshBeccsAvailability();
+    document.getElementById('beccs').checked = state.beccs;
+    document.querySelectorAll('.presets button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('portfolioLabel').textContent = p.label.toUpperCase() + (state.beccs? ' · BECCS':'');
+    render();
+  });
+});
+
+/* ---------------- optimizer ---------------- */
+['we','wt','wv'].forEach(id=>{
+  document.getElementById(id).addEventListener('input', e=>{
+    document.getElementById('v_'+id).textContent = e.target.value+'%';
+  });
+});
+
+document.getElementById('runOpt').addEventListener('click', runOptimizer);
+
+function runOptimizer(){
+  let we = +document.getElementById('we').value;
+  let wt = +document.getElementById('wt').value;
+  let wv = +document.getElementById('wv').value;
+  const sum = we+wt+wv || 1;
+  we/=sum; wt/=sum; wv/=sum;
+
+  const roSteps=[30,45,60,75,90,100];
+  const pvSteps=[0,20,40,60,80,100];
+  const bigccSteps=[0,25,50,75,100];
+  const ccSteps=['none','water','both'];
+  const pvScopeSteps=['water','both'];
+  const biocharSteps=[false,true];
+  const beccsSteps=[false,true];
+
+  let results=[];
+  roSteps.forEach(ro=>{
+    pvSteps.forEach(pv=>{
+      pvScopeSteps.forEach(pvScope=>{
+        if (pv===0 && pvScope==='both') return; // skip redundant
+        bigccSteps.forEach(bigcc=>{
+          ccSteps.forEach(ccScope=>{
+            biocharSteps.forEach(biochar=>{
+              beccsSteps.forEach(beccs=>{
+                if (beccs && (bigcc===0 || ccScope==='none')) return; // BECCS needs both BIGCC and CC
+                const s = {ro,pv,pvScope,bigcc,closure:true,ccScope,biochar,manure:'liquid',beccs};
+                const c = recompute(s);
+                const score = we*c.econScore + wt*c.techScore + wv*c.envScore;
+                results.push({s,c,score});
+              });
+            });
+          });
+        });
+      });
+    });
+  });
+  results.sort((a,b)=>b.score-a.score);
+  const top = results.slice(0,8);
+  const body = document.getElementById('rankBody');
+  body.innerHTML = top.map((r,i)=>{
+    const s=r.s, c=r.c;
+    const desc = `RO ${s.ro}% · PV ${s.pv}%${s.pv>0?' ('+(s.pvScope==='both'?'water+food':'water')+')':''} · BIGCC ${s.bigcc}%${s.ccScope!=='none'?' · CC ('+s.ccScope+')':''}${s.beccs?' · BECCS':''}${s.biochar?' · Biochar':''}`;
+    return `<tr>
+      <td>${i+1}</td>
+      <td>${desc}</td>
+      <td class="score-cell"><span class="mini-bar"><i style="width:${r.score}%"></i></span>${r.score.toFixed(0)}</td>
+      <td class="score-cell">${c.econScore.toFixed(0)}</td>
+      <td class="score-cell">${c.techScore.toFixed(0)}</td>
+      <td class="score-cell">${c.envScore.toFixed(0)}</td>
+      <td class="score-cell">${c.gwpMt.toFixed(2)}</td>
+      <td><button class="apply" data-idx="${i}">Apply</button></td>
+    </tr>`;
+  }).join('');
+  body.querySelectorAll('button.apply').forEach((btn,i)=>{
+    btn.addEventListener('click', ()=>{
+      const r = top[i];
+      state = Object.assign({}, r.s);
+      document.getElementById('ro').value=state.ro; document.getElementById('v_ro').textContent=state.ro+'%';
+      document.getElementById('pv').value=state.pv; document.getElementById('v_pv').textContent=state.pv+'%';
+      document.getElementById('bigcc').value=state.bigcc; document.getElementById('v_bigcc').textContent=state.bigcc+'%';
+      document.getElementById('closure').checked=state.closure;
+      document.getElementById('biochar').checked=state.biochar;
+      setSeg('pvscope', state.pvScope); setSeg('ccscope', state.ccScope); setSeg('manure', state.manure);
+      refreshBeccsAvailability();
+      document.getElementById('beccs').checked=state.beccs;
+      setCustom();
+      render();
+      window.scrollTo({top:0, behavior:'smooth'});
+    });
+  });
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+paintTicker();
+render();
+</script>
+
+<!-- ============================================================
+     PUBLIC DISPLAY MODE — markup + controller (additive)
+     ============================================================ -->
+<div id="displayHud" class="display-hud" aria-hidden="true">
+  <div class="display-titleblock">
+    <div class="display-kicker">State of Qatar · Water · Energy · Food</div>
+    <h1>Nexus Technology Portfolio</h1>
+    <p>A live decision model for combining desalination, power generation, carbon management and food-system
+       technologies — scored against Qatar's 2030 strategy.</p>
+  </div>
+
+  <aside id="displayTour" class="display-tour" role="region" aria-labelledby="tourTitle" aria-live="polite">
+    <div class="tour-top">
+      <div>
+        <div class="display-kicker">Policy walk-through</div>
+        <h3 id="tourTitle">Portfolio overview</h3>
+      </div>
+      <button class="tour-close" id="tourClose" type="button" aria-label="Exit display">×</button>
+    </div>
+    <p id="tourText"></p>
+    <div class="tour-progress" aria-hidden="true"><i id="tourProgress"></i></div>
+    <div class="tour-meta">
+      <span id="tourCount">1 / 12</span>
+      <button id="tourPause" type="button">Pause</button>
+    </div>
+  </aside>
+
+  <div class="display-qr" role="group" aria-label="Access this dashboard">
+    <a id="displayQrLink" class="display-qr-link" href="#" target="_blank" rel="noopener">
+      <img id="displayQrImage" width="88" height="88" alt="QR code linking to this dashboard">
+    </a>
+    <div class="display-qr-copy">
+      <strong>Open the dashboard</strong>
+      <span>Build your own portfolio</span>
+      <span class="display-qr-url" id="displayQrUrl"></span>
+    </div>
+  </div>
+</div>
+
+<aside id="displayRail" class="display-rail" aria-hidden="true">
+  <div class="railhead">Live portfolio</div>
+  <div class="rail-portfolio" id="railPortfolio">Custom mix</div>
+  <div class="rail-scores">
+    <div class="rail-score econ"><div class="rs-lbl">Economic</div><div class="rs-val" id="railEcon">–</div><div class="rs-bar"><i id="railEconBar"></i></div></div>
+    <div class="rail-score tech"><div class="rs-lbl">Technical</div><div class="rs-val" id="railTech">–</div><div class="rs-bar"><i id="railTechBar"></i></div></div>
+    <div class="rail-score env"><div class="rs-lbl">Environmental</div><div class="rs-val" id="railEnv">–</div><div class="rs-bar"><i id="railEnvBar"></i></div></div>
+  </div>
+  <div class="railhead">Key indicators</div>
+  <div class="rail-kpis" id="railKpis"></div>
+</aside>
+
+<script>
+/* ============================================================
+   PUBLIC DISPLAY MODE
+   Mirrors the "Display" control in GH Builder: one button turns the
+   page into a self-running kiosk (dark full-screen stage + guided
+   walk-through + QR card), and restores the visitor's own state on exit.
+   Written as a self-contained IIFE — it reads the existing model
+   (`state`, `PRESETS`, `render`) but changes none of it.
+   ============================================================ */
+(()=>{
+  const $ = id => document.getElementById(id);
+  const body = document.body;
+  const btn = $('btnDisplay'), hud = $('displayHud'), rail = $('displayRail'), tour = $('displayTour');
+  if(!btn) return;
+
+  /* ---------- tag the stage sections ---------- */
+  const sections = [...document.querySelectorAll('.content > section')];
+  const STAGE_IDS = ['stageTargets','stagePillars','stageKpis','stageCharts','stageWaterfall','stageOptimizer','stageAbout'];
+  sections.forEach((s,i)=>{ if(STAGE_IDS[i] && !s.id) s.id = STAGE_IDS[i]; });
+  const stageOn = id => {
+    sections.forEach(s=> s.classList.toggle('stage-on', s.id===id));
+  };
+
+  /* ---------- measure the fixed header and ticker so the stage clears both ---------- */
+  const measureChrome = ()=>{
+    if(!body.classList.contains('display-mode')) return;
+    const head = document.querySelector('header.top'), tick = document.querySelector('.ticker');
+    if(head) body.style.setProperty('--dispTop', head.offsetHeight + 'px');
+    if(tick) body.style.setProperty('--dispBottom', tick.offsetHeight + 'px');
+  };
+  let measureQueued = false;
+  const queueMeasure = ()=>{
+    if(measureQueued) return;
+    measureQueued = true;
+    requestAnimationFrame(()=>{ measureQueued = false; measureChrome(); });
+  };
+  window.addEventListener('resize', queueMeasure);
+
+  /* ---------- QR ----------
+     Always points at the published deployment, never at wherever this copy of
+     the file happens to be opened from. Override with window.NEXUS_PUBLIC_URL
+     or <meta name="nexus-public-url" content="..."> if the address changes. */
+  const PUBLIC_URL = 'https://nexus-ewf-git-main-qeerinexus1.vercel.app';
+  /* QR for PUBLIC_URL, pre-rendered and inlined so the kiosk needs no network.
+     A configured override can't be pre-rendered, so that path uses the web service. */
+  const PUBLIC_URL_QR = 'data:image/png;base64,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';
+  const qrTarget = ()=>{
+    const meta = document.querySelector('meta[name="nexus-public-url"]');
+    const configured = window.NEXUS_PUBLIC_URL || (meta && meta.content);
+    return (configured || PUBLIC_URL).split('#')[0];
+  };
+  const updateQR = ()=>{
+    const img = $('displayQrImage'), link = $('displayQrLink'), urlEl = $('displayQrUrl');
+    const target = qrTarget();
+    if(link) link.href = target;
+    if(urlEl) urlEl.textContent = target.replace(/^https?:\/\//,'');
+    if(!img) return;
+    img.onerror = ()=>{ img.style.display='none'; img.alt='QR code unavailable'; };
+    img.src = (target === PUBLIC_URL)
+      ? PUBLIC_URL_QR
+      : 'https://api.qrserver.com/v1/create-qr-code/?size=180x180&margin=8&data=' + encodeURIComponent(target);
+  };
+
+  /* ---------- push state into the control rail, exactly as a preset click would ---------- */
+  const syncControls = ()=>{
+    $('ro').value = state.ro;       $('v_ro').textContent = state.ro + '%';
+    $('pv').value = state.pv;       $('v_pv').textContent = state.pv + '%';
+    $('bigcc').value = state.bigcc; $('v_bigcc').textContent = state.bigcc + '%';
+    $('closure').checked = state.closure;
+    $('biochar').checked = state.biochar;
+    setSeg('pvscope', state.pvScope);
+    setSeg('ccscope', state.ccScope);
+    setSeg('manure',  state.manure);
+    refreshBeccsAvailability();
+    $('beccs').checked = state.beccs;
+  };
+  const setPortfolioLabel = txt =>{ $('portfolioLabel').textContent = txt; };
+  const markPreset = idx =>{
+    document.querySelectorAll('.presets button').forEach(b=>b.classList.remove('active'));
+    const sel = idx===null
+      ? document.querySelector('.presets button[data-preset="custom"]')
+      : document.querySelector('.presets button[data-preset="'+idx+'"]');
+    if(sel) sel.classList.add('active');
+  };
+
+  /* apply a thesis scenario (index into PRESETS) or a raw state patch */
+  const applyPreset = idx =>{
+    const p = PRESETS[idx];
+    Object.assign(state, p.state);
+    syncControls();
+    markPreset(idx);
+    setPortfolioLabel(p.label.toUpperCase() + (state.beccs ? ' · BECCS' : ''));
+    render();
+  };
+  const applyPatch = (patch, label)=>{
+    Object.assign(state, patch);
+    syncControls();
+    markPreset(null);
+    setPortfolioLabel(label || 'CUSTOM MIX');
+    render();
+  };
+
+  /* ---------- value sweep, so a number visibly moves on screen ---------- */
+  let animTimer = null;
+  const stopAnim = ()=>{ if(animTimer){ clearInterval(animTimer); animTimer=null; } };
+  const sweep = (key, from, to, duration=4200)=>{
+    stopAnim();
+    state[key] = from; syncControls(); render();
+    const steps = Math.max(1, Math.round(Math.abs(to-from)/5));
+    const stepMs = Math.max(90, Math.round(duration/steps));
+    let i = 0;
+    animTimer = setInterval(()=>{
+      i++;
+      const f = Math.min(1, i/steps);
+      state[key] = Math.round(from + (to-from)*f);
+      syncControls(); render();
+      if(f>=1) stopAnim();
+    }, stepMs);
+  };
+
+  /* ---------- the walk-through ---------- */
+  const steps = [
+    { stage:'stageTargets', title:'Start from the conventional baseline',
+      text:'Scenario 1: an all-CCGT power system with 45% reverse osmosis. This is the reference the whole comparison is measured against.',
+      apply:()=>applyPreset(0) },
+
+    { stage:'stagePillars', title:'Score the baseline portfolio',
+      text:'Every portfolio is scored on three pillars — economic, technical and environmental viability — using the life-cycle decision logic from the nexus framework.',
+      apply:()=>applyPreset(0) },
+
+    { stage:'stageKpis', title:'Introduce biomass gasification (BIGCC)',
+      text:'Scenario 2 moves 60% of nexus power to BIGCC and lifts RO to 55%. Emissions fall, but readiness scores drop — BIGCC sits at a lower technology readiness level.',
+      apply:()=>applyPreset(1) },
+
+    { stage:'stageKpis', title:'Amend the food system with biochar',
+      text:'Scenario 3 adds biochar: roughly half the irrigation demand and half the synthetic fertilizer, which shows up directly in the water and land footprints.',
+      apply:()=>applyPreset(2) },
+
+    { stage:'stageWaterfall', title:'Fit carbon capture to the nexus',
+      text:'Scenario 4 fits capture across water and food sub-systems. It removes ~85% of flue-gas CO₂ while adding a ~12% parasitic power load — and so a natural-gas penalty.',
+      apply:()=>applyPreset(3) },
+
+    { stage:'stageWaterfall', title:'Run capture alongside stand-alone BIGCC',
+      text:'Scenario 5 keeps capture on the CCGT while BIGCC runs unabated. The two decarbonisation routes are additive but not yet coupled.',
+      apply:()=>applyPreset(4) },
+
+    { stage:'stageWaterfall', title:'Couple the two: BECCS',
+      text:'Scenario 6 fits capture to the BIGCC exhaust. Carbon-neutral feedstock plus geological storage opens the negative-emissions pathway — the single largest step in the model.',
+      apply:()=>applyPreset(5) },
+
+    { stage:'stageCharts', title:'Add a full solar rollout',
+      text:'Scenario 7 combines 80% PV across water and food with BECCS and 70% RO. The radar shows how far the portfolio moves from the baseline on every axis.',
+      apply:()=>applyPreset(6) },
+
+    { stage:'stageKpis', title:'Sweep the solar contribution',
+      text:'Holding everything else fixed, solar climbs from 0% to 80% of nexus power. Watch global warming potential, natural gas and blended LCOE move together.',
+      apply:()=>{ applyPatch({ro:55,pvScope:'both',bigcc:0,closure:true,ccScope:'none',biochar:false,beccs:false,pv:0}, 'PV SWEEP'); sweep('pv',0,80); } },
+
+    { stage:'stageTargets', title:'Shift desalination toward reverse osmosis',
+      text:'RO moves from 45% to 75% of desalinated water. Specific desalination energy falls sharply and the portfolio crosses the >55% national strategy target.',
+      apply:()=>{ applyPatch({pv:40,pvScope:'both',bigcc:0,closure:true,ccScope:'none',biochar:true,beccs:false,ro:45}, 'RO SWEEP'); sweep('ro',45,75); } },
+
+    { stage:'stageCharts', title:'Compare all seven scenarios',
+      text:'Ranked side by side on nexus GHG emissions, the seven thesis scenarios separate cleanly — and the negative-emissions configurations sit in a class of their own.',
+      apply:()=>applyPreset(5) },
+
+    { stage:'stageTargets', title:'Measure against Qatar’s 2030 targets',
+      text:'The full portfolio against the national commitments: the −25% NDC pledge, >55% RO, 4,000 MW of solar, and a 70% cut in agricultural groundwater extraction.',
+      apply:()=>applyPreset(6) }
+  ];
+
+  const STEP_MS = 6200;
+  let session = null, index = 0, timer = null, playing = false;
+
+  const showStep = ()=>{
+    const s = steps[index];
+    stopAnim();
+    s.apply();
+    stageOn(s.stage);
+    $('tourTitle').textContent = s.title;
+    $('tourText').textContent  = s.text;
+    $('tourProgress').style.width = ((index+1)/steps.length*100) + '%';
+    $('tourCount').textContent = (index+1) + ' / ' + steps.length;
+    syncRail();
+  };
+  const setPlaying = on =>{
+    playing = !!on;
+    if(timer){ clearInterval(timer); timer = null; }
+    if(playing) timer = setInterval(()=>{
+      if(!session) return;
+      index = index >= steps.length-1 ? 0 : index+1;
+      showStep();
+    }, STEP_MS);
+    $('tourPause').textContent = playing ? 'Pause' : 'Resume';
+  };
+
+  /* ---------- live score rail ---------- */
+  const RAIL_KPIS = ['GWP','Water footprint','Blended LCOE','Specific desal energy'];
+  const syncRail = ()=>{
+    if(!body.classList.contains('display-mode')) return;
+    ['Econ','Tech','Env'].forEach(k=>{
+      const v = $(k.toLowerCase()+'Score').textContent;
+      $('rail'+k).textContent = v;
+      $('rail'+k+'Bar').style.width = (parseFloat(v)||0) + '%';
+    });
+    $('railPortfolio').textContent = $('portfolioLabel').textContent;
+    const src = [...document.querySelectorAll('#kpiGrid .kpi')];
+    $('railKpis').innerHTML = RAIL_KPIS.map(name=>{
+      const node = src.find(n=> (n.querySelector('.lbl')||{}).textContent === name);
+      if(!node) return '';
+      const d = node.querySelector('.delta');
+      return '<div class="rail-kpi"><div class="rk-lbl">' + name + '</div>'
+           + '<div class="rk-val">' + node.querySelector('.num').textContent + '</div>'
+           + '<div class="rk-dl ' + d.className.replace('delta','').trim() + '">' + d.textContent + '</div></div>';
+    }).join('');
+  };
+  /* keep the rail true even if a visitor touches a control mid-display */
+  new MutationObserver(syncRail).observe($('econScore'), {childList:true, characterData:true, subtree:true});
+
+  /* ---------- start / stop ---------- */
+  const start = ()=>{
+    if(session) return;
+    const activeBtn = document.querySelector('.presets button.active');
+    session = {
+      state: {...state},
+      label: $('portfolioLabel').textContent,
+      preset: activeBtn ? activeBtn.dataset.preset : 'custom',
+      scrollY: window.scrollY
+    };
+    body.classList.add('display-mode');
+    hud.setAttribute('aria-hidden','false');
+    rail.setAttribute('aria-hidden','false');
+    btn.textContent = 'Exit display';
+    btn.setAttribute('aria-pressed','true');
+    btn.setAttribute('aria-label','Exit display');
+    window.scrollTo(0,0);
+    measureChrome();
+    updateQR();
+    index = 0;
+    showStep();
+    setPlaying(true);
+  };
+
+  const stop = ()=>{
+    if(timer){ clearInterval(timer); timer = null; }
+    playing = false;
+    stopAnim();
+    body.classList.remove('display-mode');
+    hud.setAttribute('aria-hidden','true');
+    rail.setAttribute('aria-hidden','true');
+    sections.forEach(s=> s.classList.remove('stage-on'));
+    btn.textContent = 'Display';
+    btn.setAttribute('aria-pressed','false');
+    btn.setAttribute('aria-label','Start display');
+    if(session){
+      Object.assign(state, session.state);
+      syncControls();
+      setPortfolioLabel(session.label);
+      markPreset(session.preset === 'custom' ? null : +session.preset);
+      render();
+      window.scrollTo(0, session.scrollY);
+      session = null;
+    }
+  };
+
+  btn.addEventListener('click', ()=> session ? stop() : start());
+  $('tourClose').addEventListener('click', stop);
+  $('tourPause').addEventListener('click', ()=> setPlaying(!playing));
+  document.addEventListener('keydown', e=>{
+    if(!session) return;
+    if(e.key === 'Escape'){ stop(); }
+    else if(e.key === 'ArrowRight'){ setPlaying(false); index = index >= steps.length-1 ? 0 : index+1; showStep(); }
+    else if(e.key === 'ArrowLeft'){ setPlaying(false); index = index <= 0 ? steps.length-1 : index-1; showStep(); }
+    else if(e.key === ' '){ e.preventDefault(); setPlaying(!playing); }
+  });
+  /* a click anywhere on the stage pauses, so a visitor can take over */
+  document.querySelector('.content').addEventListener('pointerdown', ()=>{ if(session && playing) setPlaying(false); });
+})();
+</script>
+</body>
+</html>
+  line-height:1.1;
+  padding:7px 12px;
+  border:1px solid rgba(244,233,221,.35);
+  border-radius:2px;
+  background:rgba(0,0,0,.14);
+}
+.hbku-mark{
+  display:block; font-family:'Fraunces',serif; font-weight:700; font-size:15px; letter-spacing:.03em; color:#FBF2E6;
+}
+.hbku-sub{ display:block; font-family:'IBM Plex Mono',monospace; font-size:8.5px; color:#D9B79A; margin-top:1px; letter-spacing:.01em; }
+@media (max-width:640px){ .hbku-badge{ position:static; display:inline-block; margin-bottom:14px; } }
+header.top .eyebrow{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:12.5px;
+  letter-spacing:.04em;
+  color:#E8B98A;
+  margin-bottom:10px;
+}
+header.top h1{
+  color:#FBF2E6;
+  font-size:clamp(28px,4vw,42px);
+  line-height:1.08;
+  max-width:16ch;
+}
+header.top p.sub{
+  margin-top:12px;
+  max-width:62ch;
+  font-size:15.5px;
+  line-height:1.55;
+  color:#E7D3C2;
+}
+.hero-row{ display:flex; flex-wrap:wrap; gap:28px; align-items:flex-end; justify-content:space-between; }
+.hero-diagram{ flex-shrink:0; }
+
+.ticker{
+  background:#2B0410;
+  border-top:1px solid rgba(255,255,255,.12);
+}
+.ticker-inner{
+  display:flex; gap:0; overflow-x:auto; scrollbar-width:none;
+}
+.ticker-inner::-webkit-scrollbar{ display:none; }
+.tick{
+  flex:1 1 0;
+  min-width:168px;
+  padding:13px 18px;
+  border-right:1px solid rgba(255,255,255,.1);
+  font-size:12.5px;
+  color:#D9B79A;
+}
+.tick b{
+  display:block; font-family:'IBM Plex Mono',monospace; font-size:17px; color:#FBEFE1; margin-top:2px;
+}
+
+main{ padding: 30px 0 70px; }
+
+.layout{
+  display:grid;
+  grid-template-columns: 330px 1fr;
+  gap:26px;
+  align-items:start;
+}
+@media (max-width:940px){
+  .layout{ grid-template-columns:1fr; }
+}
+
+/* ---------- control rail ---------- */
+.rail{
+  position:sticky; top:14px;
+  background:var(--paper);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+@media (max-width:940px){ .rail{ position:static; } }
+
+.rail-head{
+  padding:16px 18px 14px;
+  border-bottom:1px solid var(--line);
+  background:var(--olive-light);
+}
+.rail-head h2{ font-size:18px; }
+.rail-head p{ margin:6px 0 0; font-size:12.5px; color:var(--ink-soft); line-height:1.5; }
+
+.presets{ display:grid; grid-template-columns:1fr 1fr; gap:6px; padding:14px 18px; border-bottom:1px solid var(--line); }
+.presets button{
+  font-family:'IBM Plex Sans'; font-size:11.8px; font-weight:500;
+  padding:8px 6px; border:1px solid var(--line-strong); background:#fff; color:var(--ink);
+  cursor:pointer; border-radius:var(--radius); line-height:1.25; text-align:left;
+}
+.presets button:hover{ border-color:var(--maroon); }
+.presets button.active{ background:var(--maroon); border-color:var(--maroon); color:#fff; }
+.presets .num{ font-family:'IBM Plex Mono'; font-size:10.5px; opacity:.65; display:block; }
+
+.group{ padding:16px 18px; border-bottom:1px solid var(--line); }
+.group h3{
+  font-family:'IBM Plex Sans'; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.06em;
+  color:var(--ink-soft); margin-bottom:12px; display:flex; align-items:center; gap:7px;
+}
+.group h3 .dot{ width:9px; height:9px; border-radius:50%; display:inline-block; }
+.dot.water{ background:var(--gulf); }
+.dot.energy{ background:var(--flare); }
+.dot.food{ background:var(--olive); }
+.dot.carbon{ background:var(--maroon); }
+
+.field{ margin-bottom:16px; }
+.field:last-child{ margin-bottom:0; }
+.field label{ display:flex; justify-content:space-between; font-size:13px; margin-bottom:6px; }
+.field label .val{ font-family:'IBM Plex Mono',monospace; font-weight:500; color:var(--maroon-deep); }
+input[type=range]{
+  -webkit-appearance:none; width:100%; height:5px; border-radius:3px; background:var(--line-strong); outline:none;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none; width:17px; height:17px; border-radius:50%; background:var(--maroon);
+  border:2px solid #fff; box-shadow:0 0 0 1px var(--maroon); cursor:pointer; margin-top:-1px;
+}
+input[type=range]::-moz-range-thumb{ width:15px; height:15px; border-radius:50%; background:var(--maroon); border:2px solid #fff; box-shadow:0 0 0 1px var(--maroon); cursor:pointer; }
+
+.seg{ display:flex; border:1px solid var(--line-strong); border-radius:var(--radius); overflow:hidden; }
+.seg button{
+  flex:1; padding:7px 4px; font-size:11.5px; font-family:'IBM Plex Sans'; background:#fff; border:none; border-right:1px solid var(--line-strong);
+  cursor:pointer; color:var(--ink-soft);
+}
+.seg button:last-child{ border-right:none; }
+.seg button.active{ background:var(--gulf); color:#fff; }
+
+.toggle-row{ display:flex; align-items:center; justify-content:space-between; }
+.toggle-row .note{ font-size:11.5px; color:var(--ink-soft); margin-top:4px; line-height:1.4; }
+.switch{ position:relative; width:40px; height:22px; flex-shrink:0; }
+.switch input{ opacity:0; width:0; height:0; }
+.slider-tog{ position:absolute; cursor:pointer; inset:0; background:var(--line-strong); border-radius:22px; transition:.15s; }
+.slider-tog:before{ content:""; position:absolute; height:16px; width:16px; left:3px; top:3px; background:#fff; border-radius:50%; transition:.15s; }
+.switch input:checked + .slider-tog{ background:var(--olive); }
+.switch input:checked + .slider-tog:before{ transform:translateX(18px); }
+
+.hint{ font-size:11.3px; color:var(--ink-soft); line-height:1.45; margin-top:5px; }
+
+/* ---------- main content cards ---------- */
+.panel{
+  background:var(--paper); border:1px solid var(--line); border-radius:var(--radius); margin-bottom:22px;
+}
+.panel-head{ padding:16px 22px; border-bottom:1px solid var(--line); display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:8px;}
+.panel-head h2{ font-size:19px; }
+.panel-head .meta{ font-size:12px; color:var(--ink-soft); font-family:'IBM Plex Mono',monospace; }
+.panel-body{ padding:20px 22px 24px; }
+
+.pillars{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+@media (max-width:760px){ .pillars{ grid-template-columns:1fr; } }
+.pillar{ border:1px solid var(--line); border-radius:var(--radius); padding:16px 17px; position:relative; background:#fff; }
+.pillar .tag{ font-size:11px; text-transform:uppercase; letter-spacing:.06em; font-weight:700; color:var(--ink-soft); }
+.pillar .score{ font-family:'Fraunces',serif; font-size:44px; font-weight:600; line-height:1; margin:8px 0 4px; }
+.pillar .bar{ height:6px; background:var(--sand); border-radius:3px; overflow:hidden; margin-bottom:10px; }
+.pillar .bar i{ display:block; height:100%; border-radius:3px; }
+.pillar.econ .bar i, .pillar.econ .score{ color:var(--flare); }
+.pillar.econ .bar i{ background:var(--flare); }
+.pillar.tech .bar i, .pillar.tech .score{ color:var(--gulf); }
+.pillar.tech .bar i{ background:var(--gulf); }
+.pillar.env .bar i, .pillar.env .score{ color:var(--olive); }
+.pillar.env .bar i{ background:var(--olive); }
+.pillar ul{ margin:0; padding:0; list-style:none; font-size:12px; color:var(--ink-soft); }
+.pillar ul li{ display:flex; justify-content:space-between; padding:3px 0; border-top:1px dashed var(--line); }
+.pillar ul li:first-child{ border-top:none; }
+.pillar ul li b{ color:var(--ink); font-family:'IBM Plex Mono',monospace; font-weight:500; }
+
+.kpi-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(155px,1fr)); gap:1px; background:var(--line); border:1px solid var(--line); }
+.kpi{ background:#fff; padding:15px 16px; }
+.kpi .lbl{ font-size:11.5px; color:var(--ink-soft); margin-bottom:6px; }
+.kpi .num{ font-family:'IBM Plex Mono',monospace; font-size:21px; font-weight:500; }
+.kpi .delta{ font-size:11.5px; margin-top:4px; font-weight:500; }
+.kpi .delta.down{ color:var(--good); }
+.kpi .delta.up{ color:var(--bad); }
+.kpi .delta.flat{ color:var(--ink-soft); }
+
+.chart-row{ display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+@media (max-width:900px){ .chart-row{ grid-template-columns:1fr; } }
+.chart-box{ position:relative; height:320px; }
+.chart-box.tall{ height:360px; }
+
+.targets{ display:grid; gap:14px; }
+.target-row{ display:grid; grid-template-columns:190px 1fr 90px; gap:14px; align-items:center; }
+@media (max-width:640px){ .target-row{ grid-template-columns:1fr; } .target-row .tval{ text-align:left; } }
+.target-row .tname{ font-size:13px; }
+.target-row .tname span{ display:block; font-size:11px; color:var(--ink-soft); margin-top:2px; }
+.tbar{ height:16px; background:#fff; border:1px solid var(--line-strong); border-radius:3px; position:relative; overflow:visible; }
+.tbar .fill{ position:absolute; left:0; top:0; bottom:0; border-radius:2px 0 0 2px; background:var(--gulf); }
+.tbar .marker{ position:absolute; top:-4px; bottom:-4px; width:2px; background:var(--maroon); }
+.tbar .marker::after{ content:attr(data-lbl); position:absolute; top:-16px; left:50%; transform:translateX(-50%); font-size:9.5px; font-family:'IBM Plex Mono'; color:var(--maroon); white-space:nowrap; }
+.target-row .tval{ font-family:'IBM Plex Mono',monospace; font-size:13px; text-align:right; }
+
+.about{ font-size:13px; line-height:1.65; color:var(--ink-soft); }
+.about h4{ font-size:14px; color:var(--ink); margin:14px 0 6px; }
+.about h4:first-child{ margin-top:0; }
+.about code{ background:var(--sand); padding:1px 5px; border-radius:2px; font-family:'IBM Plex Mono'; font-size:12px; }
+
+.opt-controls{ display:grid; grid-template-columns:repeat(3,1fr) auto; gap:18px; align-items:end; margin-bottom:18px; }
+@media (max-width:760px){ .opt-controls{ grid-template-columns:1fr; } }
+.opt-controls button{
+  background:var(--maroon); color:#fff; border:none; padding:11px 20px; font-family:'IBM Plex Sans'; font-weight:600;
+  font-size:13.5px; cursor:pointer; border-radius:var(--radius); white-space:nowrap;
+}
+.opt-controls button:hover{ background:var(--maroon-deep); }
+
+table.rank{ width:100%; border-collapse:collapse; font-size:12.8px; }
+table.rank th{ text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-soft); padding:8px 10px; border-bottom:1px solid var(--line-strong); }
+table.rank td{ padding:9px 10px; border-bottom:1px solid var(--line); vertical-align:top; }
+table.rank tr:hover td{ background:var(--olive-light); }
+table.rank .score-cell{ font-family:'IBM Plex Mono'; }
+table.rank button.apply{
+  background:#fff; border:1px solid var(--gulf); color:var(--gulf); padding:5px 12px; font-size:11.5px; border-radius:var(--radius); cursor:pointer; font-weight:600;
+}
+table.rank button.apply:hover{ background:var(--gulf); color:#fff; }
+.mini-bar{ display:inline-block; height:7px; background:var(--line); width:60px; border-radius:2px; overflow:hidden; vertical-align:middle; margin-right:6px; }
+.mini-bar i{ display:block; height:100%; background:var(--olive); }
+
+footer{ padding:26px 0 50px; font-size:11.8px; color:var(--ink-soft); border-top:1px solid var(--line-strong); line-height:1.7; }
+
+.badge{ display:inline-block; font-size:10.5px; font-family:'IBM Plex Mono'; padding:2px 7px; border-radius:10px; background:var(--olive-light); color:var(--olive); margin-left:8px; font-weight:600; }
+.badge.warn{ background:var(--flare-light); color:var(--flare); }
+
+.two-col{ display:grid; grid-template-columns:1.3fr 1fr; gap:22px; }
+@media (max-width:900px){ .two-col{ grid-template-columns:1fr; } }
+
+details.expl{ margin-top:10px; }
+details.expl summary{ cursor:pointer; font-size:12.5px; color:var(--gulf); font-weight:600; }
+details.expl[open] summary{ margin-bottom:8px; }
+
+@media (prefers-reduced-motion:no-preference){
+  .pillar .bar i, .tbar .fill{ transition: width .45s ease; }
+}
+</style>
+
+<!-- ============================================================
+     PUBLIC DISPLAY MODE
+     A single "Display" button turns the dashboard into a self-running
+     kiosk: dark full-screen stage, one panel at a time, a guided policy
+     walk-through that drives the real model, a live score rail, and a QR
+     card for visitors. Escape or × restores the visitor's own portfolio.
+     Additive — nothing above this point is modified.
+     ============================================================ -->
+<style id="publicDisplayStyles">
+
+/* ---------- header button (normal page) ---------- */
+.hero-side{ display:flex; flex-direction:column; align-items:flex-end; gap:14px; flex-shrink:0; }
+.hdr-actions{ display:flex; gap:8px; }
+.tbtn{
+  font-family:'IBM Plex Sans',system-ui,sans-serif;
+  font-size:13px; font-weight:600; letter-spacing:.01em;
+  padding:9px 18px; cursor:pointer;
+  color:#FBF2E6; background:rgba(0,0,0,.18);
+  border:1px solid rgba(244,233,221,.42); border-radius:2px;
+  transition:background .15s ease, border-color .15s ease, color .15s ease;
+}
+.tbtn:hover{ background:rgba(0,0,0,.34); border-color:#E8B98A; }
+.tbtn:focus-visible{ outline:2px solid var(--flare); outline-offset:2px; }
+.tbtn[aria-pressed="true"]{ background:var(--flare); border-color:#E8C77A; color:#2B0410; }
+@media (max-width:640px){ .hero-side{ align-items:flex-start; } }
+
+/* ---------- hidden until display mode ---------- */
+.display-hud, .display-rail, .display-tour{ display:none; }
+
+/* ============ DISPLAY MODE ============ */
+.display-mode{ background:#160810; color:#F7EFE6; overflow:hidden; }
+
+/* slim fixed header */
+.display-mode header.top{
+  position:fixed; top:0; left:0; right:0; z-index:60;
+  padding:0; border-bottom:2px solid var(--flare);
+  background:linear-gradient(135deg,#54001A 0%,#2B0410 70%,#1A0209 100%);
+}
+.display-mode header.top .wrap{ max-width:none; height:66px; padding:0 26px; display:flex; align-items:center; justify-content:space-between; }
+.display-mode .hbku-badge{ position:static; padding:5px 11px; }
+.display-mode .hbku-mark{ font-size:13px; }
+.display-mode .hbku-sub{ font-size:8px; }
+.display-mode .hero-row{ display:contents; }
+.display-mode .hero-row > div:first-child, .display-mode .hero-diagram{ display:none; }
+.display-mode .hero-side{ flex-direction:row; align-items:center; gap:10px; }
+.display-mode .tbtn{ font-size:13px; padding:8px 16px; }
+
+/* ticker keeps running as a fixed strip */
+.display-mode .ticker{ position:fixed; left:0; right:0; bottom:0; z-index:55; background:#20060E; border-top:1px solid rgba(232,185,138,.28); }
+.display-mode .ticker .wrap{ max-width:none; padding:0 26px; }
+.display-mode .tick{ padding:9px 16px; font-size:11px; }
+.display-mode .tick b{ font-size:14px; }
+
+/* stage area sits between the fixed HUD (left) and score rail (right) */
+/* --dispTop / --dispBottom are measured from the real header and ticker at
+   runtime, so the stage never slides under either at any width. */
+.display-mode main{ padding:0; }
+.display-mode main.wrap{
+  position:fixed; inset:var(--dispTop,66px) 0 var(--dispBottom,46px); max-width:none; margin:0;
+  padding:20px clamp(266px,20.5vw,318px) 20px clamp(330px,25vw,408px);
+  display:flex;
+}
+.display-mode .layout{ display:block; width:100%; height:100%; }
+.display-mode .rail{ display:none; }
+.display-mode .content{ display:block; height:100%; }
+.display-mode .content > section{ display:none; }
+.display-mode .content > section.stage-on{
+  display:flex; flex-direction:column; height:100%;
+  background:rgba(255,255,255,.045);
+  border:1px solid rgba(232,185,138,.26);
+  border-radius:4px; overflow:hidden;
+  box-shadow:0 24px 64px rgba(0,0,0,.45);
+  animation:stageIn .45s cubic-bezier(.22,.7,.3,1) both;
+}
+@keyframes stageIn{ from{ opacity:0; transform:translateY(10px) scale(.994);} to{ opacity:1; transform:none;} }
+@media (prefers-reduced-motion:reduce){ .display-mode .content > section.stage-on{ animation:none; } }
+
+.display-mode .panel{ background:transparent; border:0; }
+.display-mode .panel-head{ padding:15px 24px; border-bottom:1px solid rgba(232,185,138,.22); background:rgba(0,0,0,.2); flex:0 0 auto; }
+.display-mode .panel-head h2{ color:#FBF2E6; font-size:23px; }
+.display-mode .panel-head .meta{ color:#D9B79A; font-size:12px; }
+.display-mode .panel-body{
+  flex:1 1 auto; min-height:0; overflow:auto; padding:22px 24px;
+  display:flex; flex-direction:column;
+  justify-content:center;
+  justify-content:safe center; /* keeps the top reachable when content overflows */
+}
+/* 8 indicators land as a clean 4x2 board on a big screen */
+.display-mode .kpi-grid{
+  margin:auto 0; background:rgba(232,185,138,.22); border-color:rgba(232,185,138,.26);
+  grid-template-columns:repeat(4,minmax(0,1fr));
+}
+.display-mode .kpi{ padding:26px 22px; }
+@media (max-width:1180px){ .display-mode .kpi-grid{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
+
+/* dark skin for the stage contents */
+.display-mode .pillar,
+.display-mode .kpi{ background:rgba(255,255,255,.055); border-color:rgba(232,185,138,.2); }
+.display-mode .pillar .tag,
+.display-mode .kpi .lbl{ color:#D9B79A; }
+.display-mode .kpi .num{ color:#FBF2E6; font-size:24px; }
+.display-mode .kpi .delta.down{ color:#8FD3A3; }
+.display-mode .kpi .delta.up{ color:#F09393; }
+.display-mode .kpi .delta.flat{ color:#BFA88F; }
+.display-mode .pillar .score{ font-size:54px; }
+.display-mode .pillar.econ .score{ color:#E8A548; }
+.display-mode .pillar.tech .score{ color:#6FC2CE; }
+.display-mode .pillar.env .score{ color:#A8C06E; }
+.display-mode .pillar .bar{ background:rgba(0,0,0,.35); }
+.display-mode .pillar ul{ color:#D9C9B8; }
+.display-mode .pillar ul li{ border-top-color:rgba(232,185,138,.2); }
+.display-mode .pillar ul li b{ color:#FBF2E6; }
+.display-mode .pillars{ flex:0 0 auto; }
+/* the SVGs are width/height:100% over a viewBox, so the box must be bounded —
+   left unbounded they scale their type up to billboard size */
+/* .chart-row IS the .panel-body element, so it must win back its grid */
+.display-mode .panel-body.chart-row{ display:grid; grid-template-columns:1fr 1fr; }
+.display-mode .chart-row{ flex:1 1 auto; min-height:0; align-items:center; gap:26px; }
+.display-mode .chart-row > div{ min-height:0; display:flex; align-items:center; justify-content:center; }
+.display-mode .chart-box{
+  width:100%; height:100%; min-height:240px; max-height:56vh; max-width:600px; margin:0 auto;
+}
+.display-mode .chart-box.tall{ max-height:64vh; max-width:900px; }
+.display-mode .target-row{ grid-template-columns:230px 1fr 110px; }
+.display-mode .targets{ gap:22px; }
+.display-mode .tname{ color:#FBF2E6; font-size:15px; }
+.display-mode .tname span{ color:#C4A88F; }
+.display-mode .tval{ color:#FBF2E6; font-size:17px; }
+.display-mode .tbar{ background:rgba(0,0,0,.4); border-color:rgba(232,185,138,.4); height:17px; }
+/* targetBar() writes the fill colour inline, so the dark-stage colour must win */
+.display-mode .tbar .fill{ background:#7FB3BD !important; }
+.display-mode .tbar .marker{ background:var(--flare); }
+.display-mode .tbar .marker::after{ color:#E8B98A; font-size:10px; }
+.display-mode svg text{ fill:#E8DCCE; }
+
+/* panels that never belong on a public screen */
+.display-mode #stageOptimizer, .display-mode #stageAbout{ display:none !important; }
+
+/* ---------- HUD: title block + guided tour + QR (fixed left) ---------- */
+.display-mode .display-hud{
+  display:flex; flex-direction:column; gap:14px;
+  position:fixed; z-index:40; left:26px;
+  top:calc(var(--dispTop,66px) + 22px); bottom:calc(var(--dispBottom,46px) + 18px);
+  width:clamp(292px,23vw,368px); pointer-events:none;
+}
+.display-titleblock{
+  padding:16px 18px 17px;
+  background:linear-gradient(140deg,rgba(84,0,26,.95),rgba(27,4,12,.88));
+  border:1px solid rgba(232,185,138,.34);
+  border-left:4px solid var(--flare);
+  border-radius:4px;
+  box-shadow:0 18px 48px rgba(0,0,0,.42);
+  backdrop-filter:blur(12px);
+  flex:0 0 auto;
+}
+.display-kicker{
+  font-family:'IBM Plex Mono',monospace; font-size:10px; font-weight:500;
+  letter-spacing:.14em; text-transform:uppercase; color:#E8B98A; margin-bottom:8px;
+}
+.display-titleblock h1{
+  font-family:'Fraunces',serif; font-size:clamp(23px,2.1vw,32px); line-height:1.06;
+  letter-spacing:-.02em; color:#FBF2E6; margin:0;
+}
+.display-titleblock p{
+  margin:10px 0 0; font-size:13px; line-height:1.5; color:#E0CDBB;
+}
+
+/* guided walk-through panel */
+.display-tour{
+  display:flex; flex-direction:column;
+  padding:15px 17px 16px;
+  background:linear-gradient(140deg,rgba(21,90,102,.92),rgba(12,38,44,.92));
+  border:1px solid rgba(111,194,206,.4);
+  border-left:4px solid #6FC2CE;
+  border-radius:4px;
+  box-shadow:0 18px 48px rgba(0,0,0,.42);
+  backdrop-filter:blur(12px);
+  pointer-events:auto;
+  flex:0 0 auto;
+}
+.display-tour .tour-top{ display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
+.display-tour .display-kicker{ color:#A8DDE5; }
+.display-tour h3{ font-family:'Fraunces',serif; font-size:17px; line-height:1.2; color:#FBF2E6; margin:0; }
+.display-tour p{ margin:9px 0 0; font-size:12.5px; line-height:1.52; color:#D6E7EA; }
+.tour-close{
+  flex:0 0 auto; width:26px; height:26px; line-height:1; cursor:pointer;
+  font-size:17px; color:#D6E7EA; background:rgba(0,0,0,.28);
+  border:1px solid rgba(255,255,255,.28); border-radius:2px;
+}
+.tour-close:hover{ background:rgba(0,0,0,.5); color:#fff; }
+.tour-progress{ height:3px; margin-top:12px; background:rgba(0,0,0,.36); border-radius:2px; overflow:hidden; }
+.tour-progress i{ display:block; height:100%; background:#6FC2CE; width:0%; transition:width .5s linear; }
+.tour-meta{ margin-top:8px; font-family:'IBM Plex Mono',monospace; font-size:10px; color:#A8DDE5; letter-spacing:.06em; display:flex; justify-content:space-between; }
+.tour-meta button{
+  background:none; border:0; padding:0; cursor:pointer;
+  font-family:inherit; font-size:10px; letter-spacing:.06em; color:#A8DDE5; text-decoration:underline;
+}
+.tour-meta button:hover{ color:#fff; }
+
+/* QR access card, pinned to the bottom of the HUD column */
+.display-qr{
+  margin-top:auto; display:flex; align-items:center; gap:14px;
+  padding:14px 15px;
+  background:linear-gradient(140deg,rgba(27,4,12,.96),rgba(43,4,16,.92));
+  border:1px solid rgba(232,185,138,.34);
+  border-left:4px solid var(--flare);
+  border-radius:4px;
+  box-shadow:0 18px 48px rgba(0,0,0,.42);
+  backdrop-filter:blur(12px);
+  pointer-events:auto;
+  flex:0 0 auto;
+}
+.display-qr-link{ display:block; flex:0 0 auto; }
+.display-qr img{ width:88px; height:88px; background:#fff; border-radius:3px; padding:5px; object-fit:contain; display:block; }
+.display-qr-copy{ min-width:0; flex:1 1 auto; }
+.display-qr strong{ display:block; font-family:'Fraunces',serif; font-size:15px; color:#FBF2E6; line-height:1.2; }
+.display-qr span{ display:block; font-size:11.5px; color:#D9B79A; line-height:1.4; margin-top:5px; }
 .display-qr-url{ display:block; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-family:'IBM Plex Mono',monospace; font-size:9.5px; color:#E8B98A; margin-top:6px; }
 
 /* ---------- live score rail (fixed right) ---------- */
